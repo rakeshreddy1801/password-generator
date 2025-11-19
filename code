@@ -1,0 +1,66 @@
+import random
+import string
+import json
+def generate_password(length=12):
+    characters = string.ascii_letters + string.digits + string.punctuation
+    password = "".join(random.choice(characters) for _ in range(length))
+    return password
+def save_password(account, password):
+    data = {}
+    try:
+        with open("passwords.json", "r") as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        pass
+
+    data[account] = password
+
+    with open("passwords.json", "w") as file:
+        json.dump(data, file, indent=4)
+
+    print("\nPassword saved successfully!\n")
+
+
+def view_saved_passwords():
+    try:
+        with open("passwords.json", "r") as file:
+            data = json.load(file)
+            if data:
+                print("\n===== Stored Passwords =====")
+                for acc, pwd in data.items():
+                    print(f"{acc}: {pwd}")
+            else:
+                print("\nNo passwords stored yet.")
+    except FileNotFoundError:
+        print("\nDatabase not found. No passwords saved yet.")
+
+def main_menu():
+    while True:
+        print("\n========== PASSWORD MANAGER ==========")
+        print("1. Generate and store password")
+        print("2. View saved passwords")
+        print("3. Exit")
+
+        choice = input("\nEnter your choice: ")
+
+        if choice == "1":
+            length = int(input("Enter password length: "))
+            account = input("Enter account/site/app name: ")
+            password = generate_password(length)
+            print("\nGenerated Password:", password)
+            save_password(account, password)
+
+        elif choice == "2":
+            view_saved_passwords()
+
+        elif choice == "3":
+            print("\nThank you! Exiting...")
+            break
+
+        else:
+            print("\nInvalid choice, try again.")
+
+
+
+if __name__ == "__main__":
+    main_menu()
